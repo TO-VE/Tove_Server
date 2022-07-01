@@ -67,3 +67,6 @@ class GroupPurchase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     finished = models.BooleanField(default=False)
     price = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'group_purchase'
