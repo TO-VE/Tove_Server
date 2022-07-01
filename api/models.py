@@ -43,9 +43,9 @@ class CO2Cal(models.Model):
 
 
 class Challenge(models.Model):
-    title = models.CharField(max_length=5, null=False, blank=False)
+    title = models.CharField(max_length=20, null=False, blank=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    duration = models.IntegerField(default=0, null=False, blank=False)
+    duration = models.CharField(max_length=10, null=False, blank=False)
     people_num = models.IntegerField(default=0, null=False, blank=False)
     content = models.TextField(blank=False)
     check_method = models.CharField(max_length=50, null=False, blank=False)
@@ -59,7 +59,7 @@ class Challenge(models.Model):
 
 
 class GroupPurchase(models.Model):
-    title = models.CharField(max_length=5, null=False, blank=False)
+    title = models.CharField(max_length=20, null=False, blank=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     people_num = models.IntegerField(default=0)
     product_link = models.CharField(max_length=100, null=False, blank=False)

@@ -9,7 +9,7 @@ from api.models import Challenge, GroupPurchase
 from api.serializers import ChallengeSerializer, GroupPurchaseSerializer
 
 
-# 함께해요 챌린지
+# 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
 class ChallengeView(APIView):
     def get(self, request):
         challenges = Challenge.objects.all().order_by('-created_at')
