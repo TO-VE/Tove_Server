@@ -27,7 +27,18 @@ class User(models.Model):
 
 
 class Vegan(models.Model):
-    level = models.CharField(max_length=5, null=False, blank=False)
+    VEGAN_LEVEL_CHOICE = [
+        ('Vegan', 'Vegan'),
+        ('Lacto', 'Lacto'),
+        ('Ovo', 'Ovo'),
+        ('Lacto Ovo', 'Lacto Ovo'),
+        ('Pesco', 'Pesco'),
+        ('Pollo', 'Pollo'),
+        ('Flexitarian', 'Flexitarian'),
+        ('NonVegan', 'NonVegan'),
+    ]
+    level = models.CharField(max_length=11, choices=VEGAN_LEVEL_CHOICE, null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
