@@ -6,9 +6,9 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile.prod
-    command: gunicorn Tove-Server.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn Tove_Server.wsgi:application --bind 0.0.0.0:8000
     environment:
-      DJANGO_SETTINGS_MODULE: Tove-Server.settings.prod
+      DJANGO_SETTINGS_MODULE: Tove_Server.settings.prod
     env_file:
       - .env
     volumes:
