@@ -1,4 +1,3 @@
-
 import os
 from datetime import timedelta
 
@@ -23,8 +22,11 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'api.User'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 # CORS 설정 - whitelist 에 추가된 주소 접근 허용
-CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000','http://localhost:8000','http://ec2-3-36-89-169.ap-northeast-2.compute.amazonaws.com']
+CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000', 'http://localhost:8000',
+                         'http://ec2-3-36-89-169.ap-northeast-2.compute.amazonaws.com']
 CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
@@ -76,7 +78,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     )
 
 }
@@ -90,7 +92,6 @@ SIMPLE_JWT = {
 }
 
 WSGI_APPLICATION = 'Tove_Server.wsgi.application'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -110,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -123,7 +123,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
