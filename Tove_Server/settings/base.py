@@ -27,6 +27,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # CORS 설정 - whitelist 에 추가된 주소 접근 허용
 CORS_ORIGIN_WHITELIST = ['http://127.0.0.1:8000', 'http://localhost:8000',
                          'http://ec2-3-36-89-169.ap-northeast-2.compute.amazonaws.com']
+
 CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
@@ -84,7 +85,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
