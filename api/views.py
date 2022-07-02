@@ -7,9 +7,36 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from api.models import Challenge, GroupPurchase, Vegan
-from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer
+from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer, SignUpSerializer
+
+
+# 회원가입
+class SignUpView(APIView):
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            # jwt token 접근해주기
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=200,
+            )
+            # res.set_cookie("access", access_token, httponly=True)
+            # res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+        return Response(serializer.errors, status=400)
 
 
 # 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
@@ -80,6 +107,7 @@ class PurchaseDetail(APIView):
         return JsonResponse(serializer.errors, status=400)
 
 
+# 비건 단계
 class VeganView(APIView):
 
     def get(self, request):

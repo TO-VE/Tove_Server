@@ -5,7 +5,7 @@ from .models import *
 User = get_user_model()
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class SignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
