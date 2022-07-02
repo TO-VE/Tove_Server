@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
             email=email,
             password=password,
         )
+        superuser.is_staff = True
         superuser.is_superuser = True
         superuser.is_active = True
         superuser.save(using=self._db)
@@ -33,6 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=30, unique=True, null=False, blank=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     objects = UserManager()
 
