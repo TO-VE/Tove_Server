@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -67,6 +68,7 @@ class SigninView(APIView):
 
 # 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
 class ChallengeView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         challenges = Challenge.objects.all().order_by('-created_at')
         serializer = ChallengeSerializer(challenges, many=True)
@@ -84,6 +86,7 @@ class ChallengeView(APIView):
 
 
 class ChallengeDetail(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         return get_object_or_404(Challenge, pk=pk)
 
@@ -94,15 +97,18 @@ class ChallengeDetail(APIView):
 
     def patch(self, request, pk):
         challenge = self.get_object(pk)
-        serializer = ChallengeSerializer(challenge, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        if challenge.author == request.user:
+            serializer = ChallengeSerializer(challenge, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201, safe=False)
+            return JsonResponse(serializer.errors, status=400)
+        return JsonResponse({"유저 불일치!"}, status=400)
 
 
 # 같이 사요 공동구매
 class PurchaseView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         purchases = GroupPurchase.objects.all().order_by('-created_at')
         serializer = GroupPurchaseSerializer(purchases, many=True)
@@ -120,6 +126,7 @@ class PurchaseView(APIView):
 
 
 class PurchaseDetail(APIView):
+    permission_classes = [IsAuthenticated]
     def get_object(self, pk):
         return get_object_or_404(GroupPurchase, pk=pk)
 
@@ -130,15 +137,18 @@ class PurchaseDetail(APIView):
 
     def patch(self, request, pk):
         purchase = self.get_object(pk)
-        serializer = GroupPurchaseSerializer(purchase, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        if purchase.author == request.user:
+            serializer = GroupPurchaseSerializer(purchase, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+            return JsonResponse(serializer.errors, status=400)
+        return JsonResponse({"유저 불일치!"}, status=400)
 
 
 # 비건 단계
 class VeganView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
