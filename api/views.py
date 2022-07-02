@@ -74,6 +74,8 @@ class ChallengeView(APIView):
 
 
     def post(self, request):
+        data = request.data
+        data['author'] = request.user.id
         serializer = ChallengeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -108,6 +110,8 @@ class PurchaseView(APIView):
 
 
     def post(self, request):
+        data = request.data
+        data['author'] = request.user.id
         serializer = GroupPurchaseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
