@@ -14,6 +14,10 @@ from api.models import Challenge, GroupPurchase, Vegan, CO2Cal
 from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer, SignUpSerializer, \
     UserSerializer, CO2CalSerializer
 
+class TestView(APIView):
+    def get(self, request):
+        return Response("GET Hello", status=200)
+
 
 # 회원가입
 class SignUpView(APIView):

@@ -12,4 +12,5 @@ urlpatterns = [
     path('purchase', PurchaseView.as_view()),
     path('purchase/<int:pk>', PurchaseDetail.as_view()),
     path('vegan', VeganCalView.as_view()),
+    path('test', TestView.as_view()),
 ]
