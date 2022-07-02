@@ -11,5 +11,5 @@ urlpatterns = [
     path('challenge/<int:pk>', ChallengeDetail.as_view()),
     path('purchase', PurchaseView.as_view()),
     path('purchase/<int:pk>', PurchaseDetail.as_view()),
-    path('vegan', VeganView.as_view()),
+    path('vegan', VeganCalView.as_view()),
 ]

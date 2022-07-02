@@ -63,7 +63,7 @@ class Vegan(models.Model):
 
 
 class CO2Cal(models.Model):
-    level = models.CharField(max_length=5, null=False, blank=False)
+    level = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:

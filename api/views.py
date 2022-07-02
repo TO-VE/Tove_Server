@@ -1,4 +1,3 @@
-
 # Create your views here.
 import datetime
 from datetime import timedelta
@@ -11,9 +10,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from api.models import Challenge, GroupPurchase, Vegan
+from api.models import Challenge, GroupPurchase, Vegan, CO2Cal
 from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer, SignUpSerializer, \
-    UserSerializer
+    UserSerializer, CO2CalSerializer
 
 
 # 회원가입
@@ -69,11 +68,11 @@ class SigninView(APIView):
 # 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
 class ChallengeView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
         challenges = Challenge.objects.all().order_by('-created_at')
         serializer = ChallengeSerializer(challenges, many=True)
         return JsonResponse(serializer.data, status=200, safe=False)
-
 
     def post(self, request):
         data = request.data
@@ -87,6 +86,7 @@ class ChallengeView(APIView):
 
 class ChallengeDetail(APIView):
     permission_classes = [IsAuthenticated]
+
     def get_object(self, pk):
         return get_object_or_404(Challenge, pk=pk)
 
@@ -109,11 +109,11 @@ class ChallengeDetail(APIView):
 # 같이 사요 공동구매
 class PurchaseView(APIView):
     permission_classes = [IsAuthenticated]
+
     def get(self, request):
         purchases = GroupPurchase.objects.all().order_by('-created_at')
         serializer = GroupPurchaseSerializer(purchases, many=True)
         return JsonResponse(serializer.data, status=200, safe=False)
-
 
     def post(self, request):
         data = request.data
@@ -127,6 +127,7 @@ class PurchaseView(APIView):
 
 class PurchaseDetail(APIView):
     permission_classes = [IsAuthenticated]
+
     def get_object(self, pk):
         return get_object_or_404(GroupPurchase, pk=pk)
 
@@ -147,7 +148,7 @@ class PurchaseDetail(APIView):
 
 
 # 비건 단계
-class VeganView(APIView):
+class VeganCalView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -155,8 +156,14 @@ class VeganView(APIView):
         end_date = datetime.datetime.now()
         start_date = end_date - timedelta(days=7)
         veglevels = Vegan.objects.filter(user=user, created_at__range=(start_date, end_date))
-        serializer = VeganSerializer(veglevels, many=True)
-        return JsonResponse(serializer.data, status=200, safe=False)
+        veganserializer = VeganSerializer(veglevels, many=True)
+
+        co2level = CO2Cal.objects.get(user=user)
+        co2calserializer = CO2CalSerializer(co2level)
+        return JsonResponse({
+            "veganlevel": veganserializer.data,
+            "co2level": co2calserializer.data
+        }, status=200, safe=False)
 
     def post(self, request):
         user = request.user
@@ -169,12 +176,53 @@ class VeganView(APIView):
             level = "Pesco"
         elif "달걀" not in foods and "우유" not in foods:
             level = "Lacto Ovo"
-        elif "달걀" not in foods and "우유"  in foods:
+        elif "달걀" not in foods and "우유" in foods:
             level = "Ovo"
         elif "달걀" in foods and "우유" not in foods:
             level = "Lacto"
         else:
             level = "Vegan"
         veglevel = Vegan.objects.create(user=user, level=level)
-        serializer = VeganSerializer(veglevel)
-        return JsonResponse(serializer.data, status=200, safe=False)
+        veganserializer = VeganSerializer(veglevel)
+
+        lev = foodtoCO2(foods)
+        print(lev)
+        co2level, check = CO2Cal.objects.update_or_create(user=request.user, level=lev)
+        print(co2level)
+        co2calserializer = CO2CalSerializer(co2level)
+        return JsonResponse(
+            {
+                "veganlevel": veganserializer.data,
+                "co2level": co2calserializer.data
+            }, status=200, safe=False)
+
+
+def foodtoCO2(foods):
+    score = 0
+    for i in foods:
+        if "닭고기" in i:
+            score += 753
+        elif "소고기" in i:
+            score += 2816
+        elif "돼지고기" in i:
+            score += 563
+        elif "생선" in i:
+            score += 300
+        elif "달걀" in i:
+            score += 225
+        else:
+            score += 600
+
+    if score == 0:
+        level = 0
+    elif 0 < score <= 1315:
+        level = 1
+    elif 1315 < score <= 2688:
+        level = 2
+    elif 2688 < score <= 3943:
+        level = 3
+    elif 3943 < score <= 5257:
+        level = 4
+    else:
+        level = 5
+    return level
