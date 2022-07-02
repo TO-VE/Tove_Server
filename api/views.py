@@ -67,7 +67,6 @@ class SigninView(APIView):
 
 # 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
 class ChallengeView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         challenges = Challenge.objects.all().order_by('-created_at')
@@ -85,7 +84,6 @@ class ChallengeView(APIView):
 
 
 class ChallengeDetail(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
         return get_object_or_404(Challenge, pk=pk)
@@ -108,7 +106,6 @@ class ChallengeDetail(APIView):
 
 # 같이 사요 공동구매
 class PurchaseView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         purchases = GroupPurchase.objects.all().order_by('-created_at')
@@ -126,7 +123,6 @@ class PurchaseView(APIView):
 
 
 class PurchaseDetail(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get_object(self, pk):
         return get_object_or_404(GroupPurchase, pk=pk)
@@ -149,7 +145,6 @@ class PurchaseDetail(APIView):
 
 # 비건 단계
 class VeganCalView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
