@@ -3,6 +3,7 @@
 import datetime
 from datetime import timedelta
 
+from django.contrib.auth import authenticate
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -10,7 +11,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from api.models import Challenge, GroupPurchase, Vegan
-from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer, SignUpSerializer
+from api.serializers import ChallengeSerializer, GroupPurchaseSerializer, VeganSerializer, SignUpSerializer, \
+    UserSerializer
 
 
 # 회원가입
@@ -23,7 +25,7 @@ class SignUpView(APIView):
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
-            res = Response(
+            return Response(
                 {
                     "user": serializer.data,
                     "token": {
@@ -35,8 +37,32 @@ class SignUpView(APIView):
             )
             # res.set_cookie("access", access_token, httponly=True)
             # res.set_cookie("refresh", refresh_token, httponly=True)
-            return res
         return Response(serializer.errors, status=400)
+
+
+class SigninView(APIView):
+
+    def post(self, request):
+        user = authenticate(
+            email=request.data.get("email"), password=request.data.get("password")
+        )
+        if user is not None:
+            serializer = UserSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            return Response(
+                {
+                    "user": serializer.data,
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=200,
+            )
+        else:
+            return Response(status=200)
 
 
 # 함께해요 챌린지 로그인 구현후 회원 퍼미션 추가하기
